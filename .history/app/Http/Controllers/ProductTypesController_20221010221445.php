@@ -19,8 +19,6 @@ class ProductTypesController extends Controller
     ];
 
 
-    // api cho admin
-
     public function index($id = null) 
     {
         if ($id == null) {
@@ -36,7 +34,7 @@ class ProductTypesController extends Controller
         }
     }
 
-    // add product
+    // add
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules, $this->messages);
@@ -55,7 +53,7 @@ class ProductTypesController extends Controller
         }
     }
 
-    // update product
+    // update
     public function update($id, Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules, $this->messages);
@@ -77,8 +75,6 @@ class ProductTypesController extends Controller
             }
         }
     }
-
-    // delete product
     public function delete($id)
     {
         $data = ProductType::find($id);
@@ -93,17 +89,4 @@ class ProductTypesController extends Controller
             return BaseResponse::error(404, 'Data not found!');
         }
     }
-
-// api cho customer - client
-    
-    public function publicGetAll() 
-    {
-        
-        $data = ProductType::where('is_show', 1)->orderBy('TYPE_ID', 'asc')->get();
-         return BaseResponse::withData($data);   
-        
-    }
-
 }
-
-

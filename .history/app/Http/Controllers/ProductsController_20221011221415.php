@@ -173,14 +173,18 @@ class ProductsController extends Controller
         ->where('is_show', 1)
         ->orderBy('TYPE_ID', 'asc')
         ->paginate($size);
+        
 
-        // Đoạn xử lý ảnh product
-        foreach (collect($data['items']) as $item) {
-            if (!empty($item->Image)) {
-                $item->Image = url('public/data/products/' . $item->Image);
-            }
-        }
-        return BaseResponse::withData($this->paginate($data));
+        // Đoạn xử lý ảnh product.
+        // $data = $data->map(function ($row) {
+        //     if (!empty($row->Image)) {
+        //         $row->Image = url('public/data/products/' . $row->Image);
+        //     }
+        //     return $row;
+        // });
+
+
+        return BaseResponse::withData($data);
     }
 
     //Viết hàm cho gọn response pagination

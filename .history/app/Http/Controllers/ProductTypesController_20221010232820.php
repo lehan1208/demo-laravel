@@ -94,12 +94,12 @@ class ProductTypesController extends Controller
         }
     }
 
-// api cho customer - client
+    // api cho customer - client
     
-    public function publicGetAll() 
+    public function publicGetAll($id) 
     {
         
-        $data = ProductType::where('is_show', 1)->orderBy('TYPE_ID', 'asc')->get();
+        $data = ProductType::orderBy('TYPE_ID', 'asc')->get();
          return BaseResponse::withData($data);   
         
     }

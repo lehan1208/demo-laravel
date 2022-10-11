@@ -172,15 +172,17 @@ class ProductsController extends Controller
         $data = Product::with('productType')
         ->where('is_show', 1)
         ->orderBy('TYPE_ID', 'asc')
-        ->paginate($size);
+        ->paginate($size)
+        ->toArray();
 
-        // Đoạn xử lý ảnh product
-        foreach (collect($data['items']) as $item) {
-            if (!empty($item->Image)) {
-                $item->Image = url('public/data/products/' . $item->Image);
-            }
-        }
-        return BaseResponse::withData($this->paginate($data));
+        // Đoạn xử lý ảnh product.
+        // $data = $data->map(function ($row) {
+        //     if (!empty($row->Image)) {
+        //         $row->Image = url('public/data/products/' . $row->Image);
+        //     }
+        //     return $row;
+        // });
+        return BaseResponse::withData($this->paginate(data));
     }
 
     //Viết hàm cho gọn response pagination

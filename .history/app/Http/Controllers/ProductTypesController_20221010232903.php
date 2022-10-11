@@ -99,7 +99,7 @@ class ProductTypesController extends Controller
     public function publicGetAll() 
     {
         
-        $data = ProductType::where('is_show', 1)->orderBy('TYPE_ID', 'asc')->get();
+        $data = ProductType::orderBy('TYPE_ID', 'asc')->get();
          return BaseResponse::withData($data);   
         
     }

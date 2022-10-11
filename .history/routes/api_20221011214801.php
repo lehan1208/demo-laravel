@@ -63,4 +63,4 @@ Route::get('public/product-types', [ProductTypesController::class, 'publicGetAll
 
 
 // Api products  customer site
-Route::get('public/products', [ProductsController::class, 'publicGetProductsAll']);
+Route::get('public/products', [ProductsController::class, 'publicGetAll']);

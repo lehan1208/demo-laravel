@@ -37,30 +37,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request  $request) {
     return $request->user();
 });
 
-
-// Api  products types admin site
 Route::get('product-types/{id?}', [ProductTypesController::class, 'index']);
 Route::post('product-types', [ProductTypesController::class, 'create']);
 Route::post('product-types/{id}', [ProductTypesController::class, 'update']);
 Route::put('product-types/{id}', [ProductTypesController::class, 'update']);
 Route::delete('product-types/{id}', [ProductTypesController::class, 'delete']);
 
-
-
-
-
-// Api products  admin site
 Route::get('products/{id?}', [ProductsController::class, 'index']);
 Route::post('products', [ProductsController::class, 'create']);
+Route::post('products', [ProductsController::class, 'update']);
 Route::put('products/{id}', [ProductsController::class, 'update']);
 Route::delete('products/{id}', [ProductsController::class, 'delete']);
 
 
-
-// Api show products types cho customer site
-
 Route::get('public/product-types', [ProductTypesController::class, 'publicGetAll']);
-
-
-// Api products  customer site
-Route::get('public/products', [ProductsController::class, 'publicGetProductsAll']);

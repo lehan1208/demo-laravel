@@ -157,42 +157,4 @@ class ProductsController extends Controller
             return BaseResponse::error(404, 'Data not found!');
         }
     }
-
-
-    // api customer site 
-
-
-    public function publicGetProductsAll(Request $request)
-    {
-        // Nhận từ FE
-        $page = $request->page;
-        $size = $request->size;
-
-    
-        $data = Product::with('productType')
-        ->where('is_show', 1)
-        ->orderBy('TYPE_ID', 'asc')
-        ->paginate($size);
-
-        // Đoạn xử lý ảnh product
-        foreach (collect($data['items']) as $item) {
-            if (!empty($item->Image)) {
-                $item->Image = url('public/data/products/' . $item->Image);
-            }
-        }
-        return BaseResponse::withData($this->paginate($data));
-    }
-
-    //Viết hàm cho gọn response pagination
-    public function paginate($pagination)
-    {
-        $pagination = $pagination->toArray();
-        return [
-            'items' => $pagination['data'],
-            'total' => $pagination['total'],
-            'current_page' => $pagination['current_page'],
-            'last_page' => $pagination['last_page']
-        ];
-    }
 }
-

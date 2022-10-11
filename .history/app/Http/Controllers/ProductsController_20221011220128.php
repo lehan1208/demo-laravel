@@ -162,37 +162,16 @@ class ProductsController extends Controller
     // api customer site 
 
 
-    public function publicGetProductsAll(Request $request)
+    public function publicGetProductsAll()
     {
-        // Nhận từ FE
-        $page = $request->page;
-        $size = $request->size;
-
-    
-        $data = Product::with('productType')
-        ->where('is_show', 1)
-        ->orderBy('TYPE_ID', 'asc')
-        ->paginate($size);
-
-        // Đoạn xử lý ảnh product
-        foreach (collect($data['items']) as $item) {
-            if (!empty($item->Image)) {
-                $item->Image = url('public/data/products/' . $item->Image);
+        $data = Product::with('productType')->where('is_show', 1)->orderBy('TYPE_ID', 'asc')->get();
+        $data = $data->map(function ($row) {
+            if (!empty($row->Image)) {
+                $row->Image = url('public/data/products/' . $row->Image);
             }
-        }
-        return BaseResponse::withData($this->paginate($data));
-    }
-
-    //Viết hàm cho gọn response pagination
-    public function paginate($pagination)
-    {
-        $pagination = $pagination->toArray();
-        return [
-            'items' => $pagination['data'],
-            'total' => $pagination['total'],
-            'current_page' => $pagination['current_page'],
-            'last_page' => $pagination['last_page']
-        ];
+            return $row;
+        });
+        return BaseResponse::withData($data);
     }
 }
 

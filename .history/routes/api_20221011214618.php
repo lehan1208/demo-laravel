@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request  $request) {
 });
 
 
-// Api  products types admin site
+// Api danh muc menu san pham cua admin site
 Route::get('product-types/{id?}', [ProductTypesController::class, 'index']);
 Route::post('product-types', [ProductTypesController::class, 'create']);
 Route::post('product-types/{id}', [ProductTypesController::class, 'update']);
@@ -49,7 +49,7 @@ Route::delete('product-types/{id}', [ProductTypesController::class, 'delete']);
 
 
 
-// Api products  admin site
+// Api thực đơn của admin site
 Route::get('products/{id?}', [ProductsController::class, 'index']);
 Route::post('products', [ProductsController::class, 'create']);
 Route::put('products/{id}', [ProductsController::class, 'update']);
@@ -57,10 +57,10 @@ Route::delete('products/{id}', [ProductsController::class, 'delete']);
 
 
 
-// Api show products types cho customer site
+// Api show danh mục menu (products types) cho customer site
 
 Route::get('public/product-types', [ProductTypesController::class, 'publicGetAll']);
 
 
-// Api products  customer site
-Route::get('public/products', [ProductsController::class, 'publicGetProductsAll']);
+// Api show sản phẩm (product) cho customer site
+Route::get('public/products', [ProductsController::class, 'publicGetAll']);
