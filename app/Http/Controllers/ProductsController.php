@@ -12,11 +12,11 @@ class ProductsController extends Controller
 {
     private $imagePath = 'data/products';
     private $rules = [
-        'code' => 'required',
-        'name' => 'required',
-        'price' => 'required|numeric|min:0',
-        'unit' => 'required',
-        'amount' => 'numeric',
+        'Code' => 'required',
+        'Name' => 'required',
+        'Price' => 'required|numeric|min:0',
+        'Unit' => 'required',
+        'Amount' => 'numeric',
         'TYPE_ID' => 'required|numeric',
 
     ];
@@ -103,15 +103,17 @@ class ProductsController extends Controller
             $product = Product::find($id);
             if ($product) {
                 try {
-                    $product->Code = $request->code;
-                    $product->Name = $request->name;
-                    $product->Votes = $request->votes;
+                    $product->Code = $request->Code;
+                    $product->Name = $request->Name;
+                    $product->Votes = $request->Votes;
                     if ($request->Price != null) {
-                        $product->Price = $request->price;
+                        $product->Price = $request->Price;
                     }
-                    $product->Unit = $request->unit;
-                    $product->Materials = $request->materials;
-                    $product->Amount = $request->amount;
+                    $product->Unit = $request->Unit;
+                    $product->Materials = $request->Materials;
+                    $product->is_show = 1; 
+                    $product->TYPE_ID = $request->TYPE_ID;
+                    $product->Amount = $request->Amount;
                     if ($request -> has('Description')) {
                         $product->Description = $request->description;
                     }
@@ -164,16 +166,40 @@ class ProductsController extends Controller
 
     public function publicGetProductsAll(Request $request)
     {
-        // Nhận từ FE
-        $page = $request->page;
-        $size = $request->size;
+        // Pagination
+        $page = is_null($request->page) ? 1 : $request->page;
+        $size = is_null($request->size) ? 10 : $request->size;
 
     
-        $data = Product::with('productType')
-        ->where('is_show', 1)
-        ->orderBy('TYPE_ID', 'asc')
-        ->paginate($size);
+        // Sort
+        $sortBy = is_null($request->sortBy) ? 'PRO_ID' : $request->sortBy;
+        $sortDir = is_null($request->sortDir) ? 'DESC' : $request->sortDir;
 
+        // Filter: Ko gửi lên thì thôi, ko cần giá trị mặc định.
+        $filterBy = $request->filterBy;
+        $priceFrom = $request->priceFrom;
+        $priceTo = $request->priceTo;
+
+
+        // Các câu này gọi là Eloquent của Laravel. (where=lọc)
+        $data = Product::with('productType')
+        ->where('is_show', 1);
+
+        if (!is_null($filterBy) && !is_null($priceFrom)) {
+            $data = $data->where($filterBy, '>=', $priceFrom);
+        }
+        if (!is_null($filterBy) && !is_null($priceTo)) {
+            $data = $data->where($filterBy, '<', $priceTo);
+        }
+
+        // Search
+        $name = $request->name;
+        if (!is_null($name)) {
+            $data = $data->where('name', 'like', '%' . $name . '%'); // LIKE để hỗ trợ search Tương đối
+        }
+
+        $data = $data->orderBy($sortBy, $sortDir)
+        ->paginate($size); //Collection trong Laravel
         // Đoạn xử lý ảnh product
         foreach (collect($data['items']) as $item) {
             if (!empty($item->Image)) {
@@ -188,7 +214,7 @@ class ProductsController extends Controller
     {
         $pagination = $pagination->toArray();
         return [
-            'items' => $pagination['data'],
+            'items' => $pagination['data'], // 3 items.
             'total' => $pagination['total'],
             'current_page' => $pagination['current_page'],
             'last_page' => $pagination['last_page']
