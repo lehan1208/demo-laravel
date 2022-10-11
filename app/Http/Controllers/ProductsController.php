@@ -31,6 +31,10 @@ class ProductsController extends Controller
         'amount.required' => 'Quantity is required',
     ];
 
+// api site admin
+
+
+    // get all product types admin sites
     public function index($id = null)
     {
         if ($id == null) {
@@ -54,6 +58,8 @@ class ProductsController extends Controller
             };
         }
     }
+
+    // thêm product admin site
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules, $this->messages);
@@ -93,6 +99,8 @@ class ProductsController extends Controller
             }
         }
     }
+
+    // update product admin site
     public function update($id, Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules, $this->messages);
@@ -145,6 +153,8 @@ class ProductsController extends Controller
             }
         }
     }
+
+    // delete product admin site 
     public function delete($id)
     {
         $data = Product::find($id);
@@ -160,8 +170,7 @@ class ProductsController extends Controller
         }
     }
 
-
-    // api customer site 
+ // api customer site 
 
 
     public function publicGetProductsAll(Request $request)
@@ -199,8 +208,9 @@ class ProductsController extends Controller
         }
 
         $data = $data->orderBy($sortBy, $sortDir)
-        ->paginate($size); //Collection trong Laravel
-        // Đoạn xử lý ảnh product
+        ->paginate($size); // Đoạn này sẽ trả về collection trong Laravel
+
+        // Đoạn xử lý ảnh products
         foreach (collect($data['items']) as $item) {
             if (!empty($item->Image)) {
                 $item->Image = url('public/data/products/' . $item->Image);
@@ -210,6 +220,7 @@ class ProductsController extends Controller
     }
 
     //Viết hàm cho gọn response pagination
+
     public function paginate($pagination)
     {
         $pagination = $pagination->toArray();
