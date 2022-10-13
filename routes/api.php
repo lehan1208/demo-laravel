@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\HotSaleController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProductTypesController;
 use App\Http\Controllers\UserController;
@@ -57,7 +58,12 @@ Route::post('products/{id}', [ProductsController::class, 'update']);
 Route::put('products/{id}', [ProductsController::class, 'update']);
 Route::delete('products/{id}', [ProductsController::class, 'delete']);
 
-
+// api hot-sale
+Route::get('/hot-sales/{id?}', [HotSaleController::class, 'index']);
+Route::post('/hot-sales', [HotSaleController::class, 'create']);
+Route::post('/hot-sales/{id}', [HotSaleController::class, 'update']);
+Route::put('/hot-sales/{id}', [HotSaleController::class, 'update']);
+Route::delete('/hot-sales/{id}', [HotSaleController::class, 'delete']);
 
 // Api show products types cho customer site
 
