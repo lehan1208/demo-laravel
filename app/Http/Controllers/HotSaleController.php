@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\BaseResponse;
-use App\Models\ProductType;
+use App\Models\HotSale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
@@ -26,7 +26,7 @@ class HotSaleController extends Controller
     public function index($id = null)
     {
         if ($id == null) {
-            $data = ProductType::orderBy('id', 'asc')->get();
+            $data = HotSale::orderBy('id', 'asc')->get();
             $data = $data->map(function ($item) {
                 if (!empty($item->image)) {
                     $item->image = url('/public/data/hot-sale/' . $item->image);
@@ -35,7 +35,7 @@ class HotSaleController extends Controller
             });
             return BaseResponse::withData($data);
         } else {
-            $data = ProductType::find($id);
+            $data = HotSale::find($id);
             if ($data) {
                 return BaseResponse::withData($data);
             } else {
@@ -53,7 +53,7 @@ class HotSaleController extends Controller
             return BaseResponse::error(1, $validator->messages()->toJson());
         } else {
             try {
-                $dish = new ProductType();
+                $dish = new HotSale();
                 $dish->Name = $request->Name;
                 $dish->save();
 
@@ -81,7 +81,7 @@ class HotSaleController extends Controller
         if ($validator->fails()) {
             return BaseResponse::error(1, $validator->messages()->toJson());
         } else {
-            $dish = ProductType::find($id);
+            $dish = HotSale::find($id);
             if ($dish) {
                 try {
                     $dish->Name = $request->Name;
@@ -117,7 +117,7 @@ class HotSaleController extends Controller
     // delete product
     public function delete($id)
     {
-        $data = ProductType::find($id);
+        $data = HotSale::find($id);
         if ($data) {
             try {
                 $data->delete();
