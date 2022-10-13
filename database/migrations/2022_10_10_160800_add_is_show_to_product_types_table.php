@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('product_types', function (Blueprint $table) {
             //
-            //$table->boolean('is_show');: Vì Lê Hân sửa add luôn is_show vào file create_product_types rồi nên không cần chạy cái add is_show này lại nữa.
+            $table->boolean('is_show');
         });
     }
 

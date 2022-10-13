@@ -4,10 +4,9 @@ namespace App\Http;
 
 class BaseResponse
 {
-    public $code = 200; //default HTTP SUCCESS
-    public $message = "Success";
+    public $errorCode = 0;
+    public $message = "";
     public $data = null;
-    
 
     public static function withData($data)
     {
@@ -21,10 +20,10 @@ class BaseResponse
         $instance->message = $message;
         return (array)$instance;
     }
-    public static function error($code, $message)
+    public static function error($errorCode, $message)
     {
         $instance = new self();
-        $instance->code = $code;
+        $instance->$errorCode = $errorCode;
         $instance->message = $message;
         return (array)$instance;
     }
