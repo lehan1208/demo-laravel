@@ -28,6 +28,12 @@ class ProductTypesController extends Controller
     {
         if ($id == null) {
             $data = ProductType::orderBy('TYPE_ID', 'asc')->get();
+            $data = $data->map(function ($item) {
+                if (!empty($item->icon)) {
+                    $item->icon = url('/public/data/product-types/' . $item->icon);
+                }
+                return $item;
+            });
             return BaseResponse::withData($data);
         } else {
             $data = ProductType::find($id);

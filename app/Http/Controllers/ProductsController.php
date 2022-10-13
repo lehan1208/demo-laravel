@@ -85,7 +85,7 @@ class ProductsController extends Controller
                 }
 
                 // san pham duoc hien thi
-                // $product->is_show = 1; 
+                $product->is_show = 1; 
                 $product->TYPE_ID = $request->TYPE_ID;
                 $product->save();
 
