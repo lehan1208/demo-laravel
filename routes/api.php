@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\HotSaleController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProductTypesController;
 use App\Http\Controllers\UserController;
@@ -75,3 +77,11 @@ Route::get('public/products', [ProductsController::class, 'publicGetProductsAll'
 
 // Api admin site
 Route::get('/admin-site', [AdminController::class, 'index']);
+
+
+//Customer Site
+Route::post('public/register', [AuthController::class, 'register']);
+Route::post('public/login', [AuthController::class, 'login']);
+Route::post('public/logout', [AuthController::class, 'logout']);
+
+Route::post('public/order', [OrderController::class, 'order']);
