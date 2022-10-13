@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProductTypesController;
@@ -52,6 +53,7 @@ Route::delete('product-types/{id}', [ProductTypesController::class, 'delete']);
 // Api products  admin site
 Route::get('products/{id?}', [ProductsController::class, 'index']);
 Route::post('products', [ProductsController::class, 'create']);
+Route::post('products/{id}', [ProductsController::class, 'update']);
 Route::put('products/{id}', [ProductsController::class, 'update']);
 Route::delete('products/{id}', [ProductsController::class, 'delete']);
 
@@ -64,3 +66,6 @@ Route::get('public/product-types', [ProductTypesController::class, 'publicGetAll
 
 // Api products  customer site
 Route::get('public/products', [ProductsController::class, 'publicGetProductsAll']);
+
+// Api admin site
+Route::get('/admin-site', [AdminController::class, 'index']);

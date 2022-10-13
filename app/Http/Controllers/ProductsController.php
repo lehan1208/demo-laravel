@@ -34,7 +34,7 @@ class ProductsController extends Controller
     public function index($id = null)
     {
         if ($id == null) {
-            $data = Product::with('productType')->orderBy('TYPE_ID', 'asc')->get();
+            $data = Product::with('productType')->orderBy('PRO_ID', 'asc')->get();
             $data = $data->map(function ($row) {
                 if (!empty($row->Image)) {
                     $row->Image = url('public/data/products/' . $row->Image);
@@ -63,26 +63,31 @@ class ProductsController extends Controller
         } else {
             try {
                 $product = new Product();
-                $product->Code = $request->code;
-                $product->Name = $request->name;
-                $product->Votes = $request->votes;
-                $product->Price = $request->price;
-                $product->Unit = $request->unit;
-                $product->Materials = $request->materials;
-                $product->Amount = $request->amount;
-                $product->Description = $request->description;
-                // $product->Image = $request->image;
+                $product->Code = $request->Code;
+                $product->Name = $request->Name;
+                $product->Votes = $request->Votes;
+                $product->Price = $request->Price;
+                $product->Unit = $request->Unit;
+                $product->Materials = $request->Materials;
+                $product->Amount = $request->Amount;
+                // $product->Description = $request->description;
+                if ($request->Description) { // kiểm tra nếu có email mà không thay đổi thì giữ nguyên email cũ
+                    $product->Description = $request->Description;
+                }
+                if ($request->Image) { // kiểm tra nếu có email mà không thay đổi thì giữ nguyên email cũ
+                    $product->Image = $request->Image;
+                }
 
                 // san pham duoc hien thi
-                $product->is_show = 1; 
+                // $product->is_show = 1; 
                 $product->TYPE_ID = $request->TYPE_ID;
                 $product->save();
 
-                if ($request->hasFile('image')) {
-                    $file = $request->file('image');
+                if ($request->hasFile('Image')) {
+                    $file = $request->file('Image');
                     $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $imageName = $fileName . '_' . time() . '.' . $request->image->extension();
-                    $request->image->move(public_path($this->imagePath), $imageName);
+                    $imageName = $fileName . '_' . time() . '.' . $request->Image->extension();
+                    $request->Image->move(public_path($this->imagePath), $imageName);
 
                     $product->Image = $imageName;
                     $product->save();
