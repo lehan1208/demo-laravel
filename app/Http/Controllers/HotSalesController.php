@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\BaseResponse;
 use App\Models\HotSales;
-use App\Models\HotSaless;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+
 class HotSalesController extends Controller
 {
     private $ImagePath = 'data/hot-sales';
@@ -76,13 +77,13 @@ class HotSalesController extends Controller
             $dish = HotSales::find($id);
             if ($dish) {
                 try {
-                    if ($dish -> has('Name')) {
+                    if ($dish->has('Name')) {
                         $dish->Name = $request->Name;
                     }
-                    if ($dish -> has('Price')) {
+                    if ($dish->has('Price')) {
                         $dish->Price = $request->Price;
                     }
-                    if ($dish -> has('Unit')) {
+                    if ($dish->has('Unit')) {
                         $dish->Unit = $request->Unit;
                     }
                     $dish->save();
