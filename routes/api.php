@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeesController;
-use App\Http\Controllers\HotSaleController;
+use App\Http\Controllers\HotSalesController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ProductTypesController;
+use App\Http\Controllers\SideDishController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,3 +77,25 @@ Route::get('public/products', [ProductsController::class, 'publicGetProductsAll'
 
 // Api admin site
 Route::get('/admin-site', [AdminController::class, 'index']);
+
+
+//Customer Site
+Route::post('public/register', [AuthController::class, 'register']);
+Route::post('public/login', [AuthController::class, 'login']);
+Route::post('public/logout', [AuthController::class, 'logout']);
+
+Route::post('public/order', [OrderController::class, 'order']);
+
+// Api hot-sales
+Route::get('hot-sales/{id?}', [HotSalesController::class, 'index']);
+Route::post('hot-sales', [HotSalesController::class, 'create']);
+Route::post('hot-sales/{id}', [HotSalesController::class, 'update']);
+Route::put('hot-sales/{id}', [HotSalesController::class, 'update']);
+Route::delete('hot-sales/{id}', [HotSalesController::class, 'delete']);
+
+// Api side-dish
+Route::get('side-dish/{id?}', [SideDishController::class, 'index']);
+Route::post('side-dish', [SideDishController::class, 'create']);
+Route::post('side-dish/{id}', [SideDishController::class, 'update']);
+Route::put('side-dish/{id}', [SideDishController::class, 'update']);
+Route::delete('side-dish/{id}', [SideDishController::class, 'delete']);

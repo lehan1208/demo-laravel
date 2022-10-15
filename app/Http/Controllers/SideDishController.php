@@ -1,42 +1,35 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\BaseResponse;
-use App\Models\ProductType;
+use App\Models\SideDish;
+use App\Models\HotSaless;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
-
-
-class ProductTypesController extends Controller
+class SideDishController extends Controller
 {
-    private $imagePath = 'data/product-types';
+    private $ImagePath = 'data/side-dish';
     private $rules = [
         'Name' => 'required',
     ];
-
     private $messages = [
         'Name.required' => 'Name is required',
-
     ];
-
-
     // api cho admin
-
     public function index($id = null)
     {
         if ($id == null) {
-            $data = ProductType::orderBy('TYPE_ID', 'asc')->get();
+            $data = SideDish::orderBy('id', 'asc')->get();
             $data = $data->map(function ($item) {
-                if (!empty($item->icon)) {
-                    $item->icon = url('/public/data/product-types/' . $item->icon);
+                if (!empty($item->Image)) {
+                    $item->Image = url('/public/data/side-dish/' . $item->Image);
                 }
                 return $item;
             });
             return BaseResponse::withData($data);
         } else {
-            $data = ProductType::find($id);
+            $data = SideDish::find($id);
             if ($data) {
                 return BaseResponse::withData($data);
             } else {
@@ -44,69 +37,71 @@ class ProductTypesController extends Controller
             };
         }
     }
-
     // add product
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules, $this->messages);
-
         if ($validator->fails()) {
             return BaseResponse::error(1, $validator->messages()->toJson());
         } else {
             try {
-                $productType = new ProductType();
-                $productType->Name = $request->Name;
-                $productType->is_show = 1;
-                $productType->save();
+                $dish = new SideDish();
+                $dish->Name = $request->Name;
+                $dish->Price = $request->Price;
+                $dish->Unit = $request->Unit;
 
-                if ($request->hasFile('icon')) {
-                    $file = $request->file('icon');
+                $dish->save();
+
+                if ($request->hasFile('Image')) {
+                    $file = $request->file('Image');
                     $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $imageName = $fileName . '_' . time() . '.' . $request->icon->extension();
-                    $request->icon->move(public_path($this->imagePath), $imageName);
-
-                    $productType->icon = $imageName;
-                    $productType->save();
+                    $ImageName = $fileName . '_' . time() . '.' . $request->Image->extension();
+                    $request->Image->move(public_path($this->ImagePath), $ImageName);
+                    $dish->Image = $ImageName;
+                    $dish->save();
                 }
-                return BaseResponse::withData($productType);
+                return BaseResponse::withData($dish);
             } catch (\Throwable $e) {
                 return response()->json(['message' => $e->getMessage()], 500);
             }
         }
     }
-
     // update product
     public function update($id, Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules, $this->messages);
-
         if ($validator->fails()) {
             return BaseResponse::error(1, $validator->messages()->toJson());
         } else {
-            $productType = ProductType::find($id);
-            if ($productType) {
+            $dish = SideDish::find($id);
+            if ($dish) {
                 try {
-                    $productType->Name = $request->Name;
-                    $productType->is_show = 1;
-                    $productType->save();
-
-                    if ($request->hasFile('icon')) {
-                        // get old image
-                        $oldImage = $productType->icon;
+                    if ($dish -> has('Name')) {
+                        $dish->Name = $request->Name;
+                    }
+                    if ($dish -> has('Price')) {
+                        $dish->Price = $request->Price;
+                    }
+                    if ($dish -> has('Unit')) {
+                        $dish->Unit = $request->Unit;
+                    }
+                    $dish->save();
+                    if ($request->hasFile('Image')) {
+                        // get old Image
+                        $oldImage = $dish->Image;
                         if (!empty($oldImage)) {
-                            if (File::exists(public_path($this->imagePath . '/' . $oldImage))) {
-                                File::delete(public_path($this->imagePath . '/' . $oldImage));
+                            if (File::exists(public_path($this->ImagePath . '/' . $oldImage))) {
+                                File::delete(public_path($this->ImagePath . '/' . $oldImage));
                             }
                         }
-                        $file = $request->file('icon');
+                        $file = $request->file('Image');
                         $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                        $imageName = $fileName . '_' . time() . '.' . $request->icon->extension();
-                        $request->icon->move(public_path($this->imagePath), $imageName);
-
-                        $productType->icon = $imageName;
-                        $productType->save();
+                        $ImageName = $fileName . '_' . time() . '.' . $request->Image->extension();
+                        $request->Image->move(public_path($this->ImagePath), $ImageName);
+                        $dish->Image = $ImageName;
+                        $dish->save();
                     }
-                    return BaseResponse::withData($productType);
+                    return BaseResponse::withData($dish);
                 } catch (\Throwable $e) {
                     return response()->json(['message' => $e->getMessage()], 500);
                 }
@@ -115,11 +110,10 @@ class ProductTypesController extends Controller
             }
         }
     }
-
     // delete product
     public function delete($id)
     {
-        $data = ProductType::find($id);
+        $data = SideDish::find($id);
         if ($data) {
             try {
                 $data->delete();
@@ -130,14 +124,5 @@ class ProductTypesController extends Controller
         } else {
             return BaseResponse::error(404, 'Data not found!');
         }
-    }
-
-    // api cho customer - client
-
-    public function publicGetAll()
-    {
-
-        $data = ProductType::where('is_show', 1)->orderBy('TYPE_ID', 'asc')->get();
-        return BaseResponse::withData($data);
     }
 }
