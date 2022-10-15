@@ -28,13 +28,12 @@ class ProductTypesController extends Controller
     {
         if ($id == null) {
             $data = ProductType::orderBy('TYPE_ID', 'asc')->get();
-            $newData = [];
-            foreach ($data as $item) {
-            if (!empty($item['icon'])) {
-                    $item['icon'] = url('public/data/product-types/' . $item['icon']);
-                    array_push($newData, $item);
-            }
-        }
+            $data = $data->map(function ($item) {
+                if (!empty($item->icon)) {
+                    $item->icon = url('/public/data/product-types/' . $item->icon);
+                }
+                return $item;
+            });
             return BaseResponse::withData($data);
         } else {
             $data = ProductType::find($id);
@@ -90,7 +89,6 @@ class ProductTypesController extends Controller
                 try {
                     $productType->Name = $request->Name;
                     $productType->is_show = 1;
-
                     $productType->save();
 
                     if ($request->hasFile('icon')) {
@@ -147,7 +145,7 @@ class ProductTypesController extends Controller
                 $item['icon'] = url('public/data/product-types/' . $item['icon']);
                 array_push($newData, $item);
             }
-        return BaseResponse::withData($data);
-    }
+            return BaseResponse::withData($data);
+        }
     }
 }
