@@ -43,6 +43,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request  $request) {
 });
 
 
+Route::middleware(['cors'])->group(function () {
+    Route::get('product-types/{id?}', [ProductTypesController::class, 'index']);
+});
+
 // Api  products types admin site
 Route::get('product-types/{id?}', [ProductTypesController::class, 'index']);
 Route::post('product-types', [ProductTypesController::class, 'create']);
