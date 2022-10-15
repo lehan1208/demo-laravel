@@ -16,9 +16,9 @@ class ProductsController extends Controller
         'Name' => 'required',
         'Price' => 'required|numeric|min:0',
         'Unit' => 'required',
-        'Amount' => 'required|numeric',
+        'Amount' => 'numeric',
         'TYPE_ID' => 'required|numeric',
-        'Materials' => 'required'
+
     ];
 
     private $messages = [
@@ -28,32 +28,24 @@ class ProductsController extends Controller
         'price.min' => 'Price must be greater than 0',
         'TYPE_ID.numeric' => 'TYPE_ID must be numberic value',
         'TYPE_ID.min' => 'TYPE_ID must be greater than 0',
-        'Amount.required' => 'Quantity is required',
-        'Materials.required'=> 'Materials is required'
+        'amount.required' => 'Quantity is required',
     ];
 
 // api site admin
 
 
     // get all product types admin sites
-    public function index(Request $request, $id = null)
+    public function index($id = null)
     {
-        // Pagination
-        $page = is_null($request->page) ? 1 : $request->page;
-        $size = is_null($request->size) ? 10 : $request->size;
-
         if ($id == null) {
-            // return BaseResponse::withData($data);
-            $data = Product::with('productType')->orderBy('PRO_ID', 'asc')->paginate($size)->toArray();
-            $items = [];
-            foreach ($data['data'] as $item) {
-            if (!empty($item['Image'])) {
-                $item['Image'] = url('public/data/products/' . $item['Image']);
-            }
-            array_push($items, $item);
-        }
-        $data['data'] = $items;
-        return BaseResponse::withData($this->paginate($data));
+            $data = Product::with('productType')->orderBy('PRO_ID', 'asc')->get();
+            $data = $data->map(function ($row) {
+                if (!empty($row->Image)) {
+                    $row->Image = url('public/data/products/' . $row->Image);
+                }
+                return $row;
+            });
+            return BaseResponse::withData($data);
         } else {
             $data = Product::find($id);
             if ($data) {
@@ -93,8 +85,7 @@ class ProductsController extends Controller
                 }
 
                 // san pham duoc hien thi
-                $product->is_show = is_null($request->is_show) ? 1 : $request->is_show; 
-                $product->Votes = 0; //san pham moi thi ko co votes.
+                $product->is_show = 1; 
                 $product->TYPE_ID = $request->TYPE_ID;
                 $product->save();
 
@@ -106,11 +97,6 @@ class ProductsController extends Controller
 
                     $product->Image = $imageName;
                     $product->save();
-                }
-
-                // Them xu ly hien thi hinh anh sau khi them moi.
-                if ($product->Image) {
-                  $product->Image = url('public/data/products/' . $product->Image);  
                 }
                 return BaseResponse::withData($product);
             } catch (\Throwable $e) {
@@ -132,15 +118,15 @@ class ProductsController extends Controller
                 try {
                     $product->Code = $request->Code;
                     $product->Name = $request->Name;
+                    $product->Votes = $request->Votes;
                     if ($request->Price != null) {
                         $product->Price = $request->Price;
                     }
                     $product->Unit = $request->Unit;
-                    $product->Materials = $request->Materials;             
-                    $product->is_show = $request->is_show ? $request->is_show : 0; 
+                    $product->Materials = $request->Materials;
+                    $product->is_show = 1; 
                     $product->TYPE_ID = $request->TYPE_ID;
-                    $product->Amount = $request->Amount ?? $product->Amount;
-                    $product->Votes = is_null($request->Votes) ? $product->Votes : $request->Votes;
+                    $product->Amount = $request->Amount;
                     if ($request -> has('Description')) {
                         $product->Description = $request->description;
                     }
@@ -227,18 +213,14 @@ class ProductsController extends Controller
         }
 
         $data = $data->orderBy($sortBy, $sortDir)
-        ->paginate($size)
-        ->toArray();
-        $items = [];
-        foreach ($data['data'] as $item) {
-            if (!empty($item['Image'])) {
-                $item['Image'] = url('public/data/products/' . $item['Image']);
+        ->paginate($size); // Đoạn này sẽ trả về collection trong Laravel
+
+        // Đoạn xử lý ảnh products
+        foreach (collect($data['items']) as $item) {
+            if (!empty($item->Image)) {
+                $item->Image = url('public/data/products/' . $item->Image);
             }
-            array_push($items, $item);
-            // print_r($item);
-            // die;
         }
-        $data['data'] = $items;
         return BaseResponse::withData($this->paginate($data));
     }
 
@@ -246,7 +228,7 @@ class ProductsController extends Controller
 
     public function paginate($pagination)
     {
-        //$pagination = $pagination->toArray();
+        $pagination = $pagination->toArray();
         return [
             'items' => $pagination['data'], // 3 items.
             'total' => $pagination['total'],

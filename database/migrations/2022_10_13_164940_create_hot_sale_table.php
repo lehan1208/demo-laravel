@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+
         Schema::create('hot_sales', function (Blueprint $table) {
             $table->increments('id');
             $table->string('Name', 255);
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('Unit', 255);
             $table->string('Image', 255)->nullable();
             $table->timestamps();
+
         });
     }
 
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        // Schema::dropIfExists('hotSale');
+        Schema::dropIfExists('hotSale');
     }
 };

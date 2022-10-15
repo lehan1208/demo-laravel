@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\BaseResponse;
-use App\Models\ProductType;
+use App\Models\HotSale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 
-
-class ProductTypesController extends Controller
+class HotSaleController extends Controller
 {
-    private $imagePath = 'data/product-types';
+    private $imagePath = 'data/hot-sale';
     private $rules = [
         'Name' => 'required',
     ];
@@ -27,10 +26,16 @@ class ProductTypesController extends Controller
     public function index($id = null)
     {
         if ($id == null) {
-            $data = ProductType::orderBy('TYPE_ID', 'asc')->get();
+            $data = HotSale::orderBy('id', 'asc')->get();
+            $data = $data->map(function ($item) {
+                if (!empty($item->image)) {
+                    $item->image = url('/public/data/hot-sale/' . $item->image);
+                }
+                return $item;
+            });
             return BaseResponse::withData($data);
         } else {
-            $data = ProductType::find($id);
+            $data = HotSale::find($id);
             if ($data) {
                 return BaseResponse::withData($data);
             } else {
@@ -48,21 +53,20 @@ class ProductTypesController extends Controller
             return BaseResponse::error(1, $validator->messages()->toJson());
         } else {
             try {
-                $productType = new ProductType();
-                $productType->Name = $request->Name;
-                $productType->is_show = $request->is_show;
-                $productType->save();
+                $dish = new HotSale();
+                $dish->Name = $request->Name;
+                $dish->save();
 
-                if ($request->hasFile('icon')) {
-                    $file = $request->file('icon');
+                if ($request->hasFile('image')) {
+                    $file = $request->file('image');
                     $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $imageName = $fileName . '_' . time() . '.' . $request->icon->extension();
-                    $request->icon->move(public_path($this->imagePath), $imageName);
+                    $imageName = $fileName . '_' . time() . '.' . $request->image->extension();
+                    $request->image->move(public_path($this->imagePath), $imageName);
 
-                    $productType->icon = $imageName;
-                    $productType->save();
+                    $dish->image = $imageName;
+                    $dish->save();
                 }
-                return BaseResponse::withData($productType);
+                return BaseResponse::withData($dish);
             } catch (\Throwable $e) {
                 return response()->json(['message' => $e->getMessage()], 500);
             }
@@ -77,31 +81,30 @@ class ProductTypesController extends Controller
         if ($validator->fails()) {
             return BaseResponse::error(1, $validator->messages()->toJson());
         } else {
-            $productType = ProductType::find($id);
-            if ($productType) {
+            $dish = HotSale::find($id);
+            if ($dish) {
                 try {
-                    $productType->Name = $request->Name;
-                    $productType->is_show = 1;
+                    $dish->Name = $request->Name;
 
-                    $productType->save();
+                    $dish->save();
 
-                    if ($request->hasFile('icon')) {
+                    if ($request->hasFile('image')) {
                         // get old image
-                        $oldImage = $productType->icon;
+                        $oldImage = $dish->image;
                         if (!empty($oldImage)) {
                             if (File::exists(public_path($this->imagePath . '/' . $oldImage))) {
                                 File::delete(public_path($this->imagePath . '/' . $oldImage));
                             }
                         }
-                        $file = $request->file('icon');
+                        $file = $request->file('image');
                         $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                        $imageName = $fileName . '_' . time() . '.' . $request->icon->extension();
-                        $request->icon->move(public_path($this->imagePath), $imageName);
+                        $imageName = $fileName . '_' . time() . '.' . $request->image->extension();
+                        $request->image->move(public_path($this->imagePath), $imageName);
 
-                        $productType->icon = $imageName;
-                        $productType->save();
+                        $dish->image = $imageName;
+                        $dish->save();
                     }
-                    return BaseResponse::withData($productType);
+                    return BaseResponse::withData($dish);
                 } catch (\Throwable $e) {
                     return response()->json(['message' => $e->getMessage()], 500);
                 }
@@ -114,7 +117,7 @@ class ProductTypesController extends Controller
     // delete product
     public function delete($id)
     {
-        $data = ProductType::find($id);
+        $data = HotSale::find($id);
         if ($data) {
             try {
                 $data->delete();
@@ -127,19 +130,4 @@ class ProductTypesController extends Controller
         }
     }
 
-    // api cho customer - client
-
-    public function publicGetAll()
-    {
-
-        $data = ProductType::where('is_show', 1)->orderBy('TYPE_ID', 'asc')->get();
-        $newData = [];
-        foreach ($data as $item) {
-            if (!empty($item['icon'])) {
-                $item['icon'] = url('public/data/product-types/' . $item['icon']);
-                array_push($newData, $item);
-            }
-        return BaseResponse::withData($data);
-    }
-    }
 }
